@@ -1,3 +1,9 @@
-SERIAL=2
-DESCRIPTION=inert placeholder; second revision, proving repo change -> node
+SERIAL=3
+DESCRIPTION=self-contained object; payload and signature in one file
 RENDEZVOUS=placeholder.invalid
+-----BEGIN SSH SIGNATURE-----
+U1NIU0lHAAAAAQAAADMAAAALc3NoLWVkMjU1MTkAAAAgqAHvaEt8hBG+7eaLstzBfn/lxN
+eiaR+oYhL9rTc8fDAAAAAEZmlsZQAAAAAAAAAGc2hhNTEyAAAAUwAAAAtzc2gtZWQyNTUx
+OQAAAEAjl85ZveyIbG9cdX4tufpI/2+/i3+Ufa6M0pJpXtwim8k032hC6Reeo2GzgmqqD1
+8SHEIoL7Ug8CXHp0mY18IP
+-----END SSH SIGNATURE-----
