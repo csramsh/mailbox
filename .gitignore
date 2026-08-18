@@ -1,0 +1,5 @@
+# Never, under any circumstances, in this repository.
+*.key
+*.pem
+id_*
+!*.pub

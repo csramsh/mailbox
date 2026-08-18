@@ -1,0 +1,21 @@
+# External / sensitive identifiers that must never appear in tracked FILE CONTENT.
+# One base64-encoded extended-regex (grep -E) per non-comment line; blank lines
+# and #-comments are ignored. Patterns are base64 so the very identifiers we
+# forbid don't sit in plaintext in this PUBLIC tree — scripts/trust-tier/scan.sh
+# decodes them at load time. This is tidiness/obfuscation, not secrecy. Inspect:
+#   grep -vE '^[[:space:]]*(#|$)' content-denylist.txt | base64 -d
+#
+# Keep this list TIGHT. Internal DNS/IPs that are structurally load-bearing in
+# public manifests are permitted. Catch only what is genuinely wrong in a public
+# base-image repo: real WAN-facing domains and internal service hostnames that
+# have no business in image build configs.
+#
+# scripts/trust-tier/* is excluded from content scans (these denylists describe
+# the very patterns they match — scanning them would self-trip).
+
+# Real apex domain — only ever via masked secrets (e.g. ZOT_REGISTRY) or
+# generic descriptions; also catches *.lab.* subdomains.
+XGJyb3B4clwuZGV2XGI=
+
+# Internal homenet DNS suffix — reserved-suffix names do not belong in build configs.
+XC5ob21lXC5hcnBhXGI=

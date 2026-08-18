@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Reject commit messages that contain internal infrastructure identifiers.
+# Rule: no internal infrastructure identifiers in public commit history.
+# Bypass with `git commit --no-verify` only as a last resort.
+#
+# Install: ln -sf ../../scripts/git-hooks/commit-msg .git/hooks/commit-msg
+set -euo pipefail
+
+msg_file="$1"
+msg=$(grep -v '^#' "$msg_file" || true)
+
+root="$(git rev-parse --show-toplevel)"
+# message-denylist.txt entries are base64-encoded; decode each to its grep -E pattern.
+mapfile -t forbidden < <(grep -vE '^[[:space:]]*(#|$)' \
+  "$root/scripts/trust-tier/message-denylist.txt" 2>/dev/null \
+  | while IFS= read -r b64; do printf '%s' "$b64" | base64 -d 2>/dev/null && printf '\n'; done || true)
+
+for pat in "${forbidden[@]}"; do
+  if echo "$msg" | grep -Eq "$pat"; then
+    match=$(echo "$msg" | grep -Eo "$pat" | head -1)
+    cat >&2 <<EOF
+✗ commit message contains an internal infrastructure identifier.
+
+  matched: ${match}
+  pattern: ${pat}
+
+  Rule: don't put hostnames / IPs / internal DNS names / tracker IDs in
+  commit subjects or bodies. They live in (encrypted) config, not git history.
+
+  Bypass with --no-verify only if the leak is truly unavoidable.
+EOF
+    exit 1
+  fi
+done
+exit 0

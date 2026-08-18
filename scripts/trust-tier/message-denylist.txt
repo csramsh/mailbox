@@ -1,0 +1,21 @@
+# Internal infrastructure identifiers forbidden in COMMIT MESSAGES / history of
+# this PUBLIC repo (mirrors to GitHub — world-readable).
+# One base64-encoded extended-regex (grep -E) per non-comment line; blank lines
+# and #-comments ignored. Base64 keeps the forbidden identifiers out of this
+# public tree; the commit-msg hook and scan.sh decode at load time. Inspect:
+#   grep -vE '^[[:space:]]*(#|$)' message-denylist.txt | base64 -d
+#
+# Bundled copy of the canonical denylist; lets the GitHub Actions backstop run
+# self-contained, without an external dependency.
+# Guards MESSAGES only — content-denylist.txt handles file content.
+
+XGJbYS16MC05LV0rXC5ob21lXC5hcnBhXGI=
+XGJob21lXC5hcnBhXGI=
+XGIxNzJcLjE2XC5bMC05XXsxLDN9XC5bMC05XXsxLDN9XGI=
+XGIxOTJcLjE2OFwuWzAtOV17MSwzfVwuWzAtOV17MSwzfVxi
+XGIxMFwuWzAtOV17MSwzfVwuWzAtOV17MSwzfVwuWzAtOV17MSwzfVxi
+XGJbYS16MC05LV0rLShjb21wdXRlfG1hbmFnZXxtZXNoKVxi
+XGJyZWdpc3RyeS1ob21lLWFycGEtYXV0aFxi
+XGJob21lLWFycGFcYg==
+XGJyb3B4clwuZGV2XGI=
+XGJhZ2VudHMtW2EtejAtOV17Myx9XGI=
