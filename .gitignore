@@ -3,3 +3,9 @@
 *.pem
 id_*
 !*.pub
+
+# ⚠️ Operator config — endpoints and paths. THIS REPO IS PUBLIC.
+# The rendezvous address is exactly the kind of identifier the encryption
+# exists to keep out of here; .gitignore is what keeps it out of the commit.
+.env
+.env.local
