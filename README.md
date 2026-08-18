@@ -33,7 +33,7 @@ it has accepted and refuses anything not **strictly greater**, equal included.
 ## Layout
 
 ```
-recipients/<node-id>.pub      public encryption recipient for that node
+recipients/<node-id>.crt      public encryption recipient for that node
 nodes/<node-id>/config        payload
 nodes/<node-id>/config.sig    detached signature over it
 ```
@@ -42,9 +42,24 @@ Node ids are opaque and derived from the node's own public key. **Directory
 names in a public repository are public even when file contents are not**, so
 they deliberately encode nothing about a deployment.
 
-## ⚠️ Current payloads are NOT yet encrypted
+## Payloads are encrypted as well as signed
 
-Signing is implemented; encryption is not. Until it is, **every payload here
-must be inert** — placeholders only, and nothing that identifies a host, an
-address, a network or a location. Do not commit a real endpoint to this
-repository before encryption lands.
+Each object is **encrypt-then-sign**: an openssl CMS envelope addressed to that
+node's recipient, with a detached signature over the *ciphertext* appended to
+it. A node therefore authenticates **before** it decrypts — a decryptor is a
+parser, and a parser fed attacker-controlled bytes is an attack surface no key
+hygiene fixes.
+
+Everything instructional is inside the envelope, **including the serial**, so
+nothing in this repository states what any device is being told to do. What
+remains visible is the node-id directory name (opaque by construction), the
+object size, and commit timestamps.
+
+Build an object with:
+
+```
+scripts/make-payload.sh <signing-key> <recipient-cert> <node-id> <serial> KEY=VALUE ...
+```
+
+It refuses a serial that does not advance, because a node cannot distinguish an
+operator's mistake from a replay and should not have to.
