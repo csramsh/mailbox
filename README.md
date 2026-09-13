@@ -34,9 +34,14 @@ it has accepted and refuses anything not **strictly greater**, equal included.
 
 ```
 recipients/<node-id>.crt      public encryption recipient for that node
-nodes/<node-id>/config        payload
-nodes/<node-id>/config.sig    detached signature over it
+nodes/<node-id>/config        the payload: CMS ciphertext with its SSH signature appended
+nodes/<node-id>/.serial       cleartext ledger: the last serial published (a number, no instruction)
 ```
+
+One object per node, replaced by each new serial; older serials exist only in
+git history. The signature is appended rather than a separate `config.sig`:
+a CDN caches two files independently, and a new payload served beside an old
+signature verifies as tampered.
 
 Node ids are opaque and derived from the node's own public key. **Directory
 names in a public repository are public even when file contents are not**, so
@@ -55,11 +60,29 @@ nothing in this repository states what any device is being told to do. What
 remains visible is the node-id directory name (opaque by construction), the
 object size, and commit timestamps.
 
-Build an object with:
+## Publishing to a node
+
+Instructions are published per named node by the flash kit in `csramsh/nodes`,
+which keeps node ids and relay ports in the operator's secrets store:
+
+```
+dist/flash.sh mailbox <node> report [all|slot|uptime|version|kernel|uname]
+dist/flash.sh mailbox <node> backhaul on|off [--route b]
+dist/flash.sh mailbox <node> send KEY=VALUE...
+```
+
+A node's recipient and first serial are published by `dist/flash.sh card --node
+<name>` when its card is written. Retiring a node (`dist/flash.sh retire <id>`)
+removes its directory and recipient here; git history keeps them.
+
+The kit publishes through this repo's own tooling: `scripts/make-payload.sh`
+builds the object, and `just publish` commits and pushes it.
 
 ```
 scripts/make-payload.sh <signing-key> <recipient-cert> <node-id> <serial> KEY=VALUE ...
 ```
 
 It refuses a serial that does not advance, because a node cannot distinguish an
-operator's mistake from a replay and should not have to.
+operator's mistake from a replay and should not have to. The gitignored `.env`
+holds only what the fleet shares: `BACKHAUL_HOST`, `BACKHAUL_PORT`,
+`BACKHAUL_B_HOST`, `BACKHAUL_B_PORT`.
